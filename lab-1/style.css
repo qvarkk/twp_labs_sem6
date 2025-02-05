@@ -1,0 +1,76 @@
+:root {
+  --bg-color: rgb(207, 207, 196);
+  --traffic-light-color: rgb(74, 74, 74);
+  --red-color: rgb(255, 105, 97);
+  --yellow-color: rgb(255, 234, 97);
+  --green-color: rgb(90, 195, 90);
+  --gray-color: rgb(134, 134, 127);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  padding-top: 50px;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: end;
+  gap: 40px;
+  max-width: 720px;
+  height: 780px;
+  border-radius: 10px;
+  background-color: var(--bg-color);
+}
+
+.traffic-light {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 100%;
+  max-width: 250px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--traffic-light-color);
+}
+
+.pedestrian {
+  height: 67%;
+}
+
+.light {
+  border-radius: 10px;
+  height: 220px;
+  width: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.active-red {
+  background-color: var(--red-color);
+}
+
+.active-yellow {
+  background-color: var(--yellow-color);
+}
+
+.active-green {
+  background-color: var(--green-color);
+}
+
+.inactive {
+  background-color: var(--gray-color) !important;
+  color: var(--gray-color) !important;
+}

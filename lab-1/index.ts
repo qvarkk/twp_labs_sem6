@@ -78,6 +78,8 @@ class TrafficLightDomManager {
     readonly redPedestrianLight: HTMLElement;
     readonly greenPedestrianLight: HTMLElement;
 
+    readonly timerText: HTMLElement;
+
     private _time: number;
 
     private stateMachine: TrafficLightStateMachine;
@@ -88,9 +90,10 @@ class TrafficLightDomManager {
         this.greenCarLight = document.querySelector('#greenCarLight') as HTMLElement;
         this.redPedestrianLight = document.querySelector('#redPedestrianLight') as HTMLElement;
         this.greenPedestrianLight = document.querySelector('#greenPedestrianLight') as HTMLElement;
+        this.timerText = document.querySelector('#timerText') as HTMLElement;
 
         if (!this.redCarLight || !this.yellowCarLight || !this.greenCarLight ||
-            !this.redPedestrianLight || !this.greenPedestrianLight) {
+            !this.redPedestrianLight || !this.greenPedestrianLight || !this.timerText) {
             alert('Not all required elements are present on page!');
         }
 
@@ -108,6 +111,8 @@ class TrafficLightDomManager {
     }
 
     private handleTimer(): void {
+        this.timerText.innerHTML = `Time: ${this._time}`;
+
         if (this._time == 0) {
             this.sendSignal(IncomingSignal.RED);
         }

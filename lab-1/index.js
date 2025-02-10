@@ -13,14 +13,18 @@ var IncomingSignal;
     IncomingSignal[IncomingSignal["GREEN"] = 2] = "GREEN";
     IncomingSignal[IncomingSignal["YELLOW"] = 3] = "YELLOW";
 })(IncomingSignal || (IncomingSignal = {}));
-class TrafficLightStateMachine {
-    get state() {
-        return this._state;
-    }
-    constructor() {
+var TrafficLightStateMachine = /** @class */ (function () {
+    function TrafficLightStateMachine() {
         this._state = State.OFF;
     }
-    sendSignal(signal) {
+    Object.defineProperty(TrafficLightStateMachine.prototype, "state", {
+        get: function () {
+            return this._state;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    TrafficLightStateMachine.prototype.sendSignal = function (signal) {
         switch (signal) {
             case IncomingSignal.RED:
                 this.handleRedSignal();
@@ -36,50 +40,54 @@ class TrafficLightStateMachine {
                 break;
         }
         return this.state;
-    }
-    handleRedSignal() {
+    };
+    TrafficLightStateMachine.prototype.handleRedSignal = function () {
         if (this._state == State.OFF || this._state == State.YELLOW) {
             this._state = State.RED;
         }
-    }
-    handleYellowRedSignal() {
+    };
+    TrafficLightStateMachine.prototype.handleYellowRedSignal = function () {
         if (this._state == State.RED) {
             this._state = State.YELLOW_RED;
         }
-    }
-    handleGreenSignal() {
+    };
+    TrafficLightStateMachine.prototype.handleGreenSignal = function () {
         if (this._state == State.YELLOW_RED) {
             this._state = State.GREEN;
         }
-    }
-    handleYellowSignal() {
+    };
+    TrafficLightStateMachine.prototype.handleYellowSignal = function () {
         if (this._state == State.GREEN) {
             this._state = State.YELLOW;
         }
-    }
-}
-class TrafficLightDomManager {
-    constructor() {
+    };
+    return TrafficLightStateMachine;
+}());
+var TrafficLightDomManager = /** @class */ (function () {
+    function TrafficLightDomManager() {
         this.redCarLight = document.querySelector('#redCarLight');
         this.yellowCarLight = document.querySelector('#yellowCarLight');
         this.greenCarLight = document.querySelector('#greenCarLight');
         this.redPedestrianLight = document.querySelector('#redPedestrianLight');
         this.greenPedestrianLight = document.querySelector('#greenPedestrianLight');
+        this.timerText = document.querySelector('#timerText');
         if (!this.redCarLight || !this.yellowCarLight || !this.greenCarLight ||
-            !this.redPedestrianLight || !this.greenPedestrianLight) {
+            !this.redPedestrianLight || !this.greenPedestrianLight || !this.timerText) {
             alert('Not all required elements are present on page!');
         }
         this.stateMachine = new TrafficLightStateMachine();
         this.handleState();
-        this._time = 0;
+        this._time = -1;
     }
-    work() {
-        setInterval(() => {
-            this.handleTimer();
-            this._time++;
+    TrafficLightDomManager.prototype.work = function () {
+        var _this = this;
+        setInterval(function () {
+            _this._time++;
+            _this.handleTimer();
         }, 1000);
-    }
-    handleTimer() {
+    };
+    TrafficLightDomManager.prototype.handleTimer = function () {
+        this.timerText.innerHTML = "Time: ".concat(this._time);
         if (this._time == 0) {
             this.sendSignal(IncomingSignal.RED);
         }
@@ -94,14 +102,14 @@ class TrafficLightDomManager {
         }
         else if (this._time == 24) {
             this.sendSignal(IncomingSignal.RED);
-            this._time = 0;
+            this._time = -1;
         }
-    }
-    sendSignal(signal) {
+    };
+    TrafficLightDomManager.prototype.sendSignal = function (signal) {
         this.stateMachine.sendSignal(signal);
         this.handleState();
-    }
-    handleState() {
+    };
+    TrafficLightDomManager.prototype.handleState = function () {
         switch (this.stateMachine.state) {
             case State.OFF:
                 this.handleOffState();
@@ -119,34 +127,35 @@ class TrafficLightDomManager {
                 this.handleYellowState();
                 break;
         }
-    }
-    handleOffState() {
+    };
+    TrafficLightDomManager.prototype.handleOffState = function () {
         this.redCarLight.classList.add('inactive');
         this.yellowCarLight.classList.add('inactive');
         this.greenCarLight.classList.add('inactive');
         this.redPedestrianLight.classList.add('inactive');
         this.greenPedestrianLight.classList.add('inactive');
-    }
-    handleRedState() {
+    };
+    TrafficLightDomManager.prototype.handleRedState = function () {
         this.redCarLight.classList.remove('inactive');
         this.yellowCarLight.classList.add('inactive');
         this.redPedestrianLight.classList.add('inactive');
         this.greenPedestrianLight.classList.remove('inactive');
-    }
-    handleYellowRedState() {
+    };
+    TrafficLightDomManager.prototype.handleYellowRedState = function () {
         this.yellowCarLight.classList.remove('inactive');
         this.redPedestrianLight.classList.remove('inactive');
         this.greenPedestrianLight.classList.add('inactive');
-    }
-    handleGreenState() {
+    };
+    TrafficLightDomManager.prototype.handleGreenState = function () {
         this.redCarLight.classList.add('inactive');
         this.yellowCarLight.classList.add('inactive');
         this.greenCarLight.classList.remove('inactive');
-    }
-    handleYellowState() {
+    };
+    TrafficLightDomManager.prototype.handleYellowState = function () {
         this.yellowCarLight.classList.remove('inactive');
         this.greenCarLight.classList.add('inactive');
-    }
-}
-let domManager = new TrafficLightDomManager();
+    };
+    return TrafficLightDomManager;
+}());
+var domManager = new TrafficLightDomManager();
 domManager.work();

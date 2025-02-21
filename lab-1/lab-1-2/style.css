@@ -52,6 +52,28 @@ body {
   color: var(--red-color) !important;
 }
 
+.wait-button {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border: 3px solid var(--traffic-light-color);
+  border-radius: 5px;
+  padding: 5px;
+  background-color: transparent;
+  color: var(--traffic-light-color);
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.wait-button:hover {
+  background-color: var(--traffic-light-color);
+  color: var(--bg-color);
+}
+
+.wait-button:active {
+  filter: opacity(60%);
+}
+
 .traffic-light-container {
   display: flex;
   justify-content: space-evenly;

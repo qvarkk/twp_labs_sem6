@@ -1,0 +1,16 @@
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  margin: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas {
+  margin: 0;
+  padding: 0;
+  border: 1px solid black;
+}

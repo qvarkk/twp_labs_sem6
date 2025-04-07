@@ -1,6 +1,9 @@
 import './style.css'
-import TuringMachine from './turingMachine/turingMachine';
+import { Symbol } from './types/types.ts';
+import TuringMachine, { State } from './turingMachine/turingMachine';
 import TuringRenderer from './turingRenderer/TuringRenderer';
+
+let timeout: number | undefined = undefined;
 
 const cellSize = 100;
 let height = cellSize + 100;
@@ -13,8 +16,12 @@ canvas.width = width;
 const turingPosX = 25;
 const turingPosY = height / 2 - cellSize / 2;
 
-const turingMachine = new TuringMachine(['1', '+', '1']);
+const stateText = document.querySelector('#state') as HTMLHeadingElement;
+const statusText = document.querySelector('#status') as HTMLHeadingElement;
+const turingMachine = new TuringMachine([Symbol.ONE, Symbol.PLUS, Symbol.ONE]);
 const turingRenderer = new TuringRenderer(canvas, turingPosX, turingPosY, cellSize, turingMachine);
+statusText.innerHTML = turingMachine.status;
+outputState();
 turingRenderer.draw();
 
 
@@ -28,18 +35,39 @@ document.querySelector('#startButton')?.addEventListener('click', () => {
     return;
   }
 
-  // TODO: fix this bullshit
-  // let symbolArray: Symbol[] = [];
-  // for (const char of tapeInput) {
-  //   symbolArray.push(char);
-  // }
+  let symbolArray: Symbol[] = [];
+  for (const char of tapeInput) {
+    if (char === "1")
+      symbolArray.push(Symbol.ONE);
+    else 
+    symbolArray.push(Symbol.PLUS);
+  }
 
-  // turingMachine.resetTape(symbolArray);
+  clearInterval(timeout);
+  turingMachine.resetTape(symbolArray);
+  statusText.innerHTML = turingMachine.status;
+  outputState();
+  turingRenderer.draw();
+});
+
+document.querySelector('#autoButton')?.addEventListener('click', () => {
+  timeout = setInterval(() => {
+    if (turingMachine.currentState === State.q3)
+      clearInterval(timeout);
+
+    turingMachine.step();
+    statusText.innerHTML = turingMachine.status;
+    outputState();
+    turingRenderer.draw();
+  }, 2000);
 });
 
 
 document.querySelector('#stepButton')?.addEventListener('click', () => {
+  clearInterval(timeout);
   turingMachine.step();
+  statusText.innerHTML = turingMachine.status;
+  outputState();
   turingRenderer.draw();
 });
 
@@ -57,4 +85,8 @@ function resizeCanvas() {
 
   canvas.height = height;
   canvas.width = width;
+}
+
+function outputState() {
+  stateText.innerHTML = turingMachine.currentStateString;
 }

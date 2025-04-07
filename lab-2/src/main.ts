@@ -1,26 +1,26 @@
 import './style.css'
 import { Symbol } from './types/types.ts';
-import TuringMachine, { State } from './turingMachine/turingMachine';
+import TuringMachine, { State } from './turingMachine/TuringMachine.ts';
 import TuringRenderer from './turingRenderer/TuringRenderer';
 
 let timeout: number | undefined = undefined;
 
 const cellSize = 100;
-let height = cellSize + 100;
-let width = window.innerWidth - 100;
+const paddingX = 50;
+const paddingY = 100;
+
+let height: number = 0;
+let width: number = 0;
 
 const canvas = document.querySelector('#canvas') as HTMLCanvasElement;
-canvas.height = height;
-canvas.width = width;
+resizeCanvas();
 
 const turingPosX = 25;
 const turingPosY = height / 2 - cellSize / 2;
 
 const stateText = document.querySelector('#state') as HTMLHeadingElement;
-const statusText = document.querySelector('#status') as HTMLHeadingElement;
 const turingMachine = new TuringMachine([Symbol.ONE, Symbol.PLUS, Symbol.ONE]);
 const turingRenderer = new TuringRenderer(canvas, turingPosX, turingPosY, cellSize, turingMachine);
-statusText.innerHTML = turingMachine.status;
 outputState();
 turingRenderer.draw();
 
@@ -40,23 +40,21 @@ document.querySelector('#startButton')?.addEventListener('click', () => {
     if (char === "1")
       symbolArray.push(Symbol.ONE);
     else 
-    symbolArray.push(Symbol.PLUS);
+      symbolArray.push(Symbol.PLUS);
   }
 
   clearInterval(timeout);
   turingMachine.resetTape(symbolArray);
-  statusText.innerHTML = turingMachine.status;
   outputState();
   turingRenderer.draw();
 });
 
 document.querySelector('#autoButton')?.addEventListener('click', () => {
   timeout = setInterval(() => {
-    if (turingMachine.currentState === State.q3)
+    if (turingMachine.currentState === State.Q4)
       clearInterval(timeout);
 
     turingMachine.step();
-    statusText.innerHTML = turingMachine.status;
     outputState();
     turingRenderer.draw();
   }, 2000);
@@ -66,7 +64,6 @@ document.querySelector('#autoButton')?.addEventListener('click', () => {
 document.querySelector('#stepButton')?.addEventListener('click', () => {
   clearInterval(timeout);
   turingMachine.step();
-  statusText.innerHTML = turingMachine.status;
   outputState();
   turingRenderer.draw();
 });
@@ -80,13 +77,16 @@ addEventListener('resize', () => {
 });
 
 function resizeCanvas() {
-  height = window.innerHeight / 2;
-  width = window.innerWidth - 100;
+  height = cellSize + paddingY;
+  width = cellSize * 12 + paddingX;
+//                   ^^ arbitrary number that 
+//                   ^^ will fit enough cells 
+//                   ^^ to show to mister Braginsky emae
 
   canvas.height = height;
   canvas.width = width;
 }
 
 function outputState() {
-  stateText.innerHTML = turingMachine.currentStateString;
+  stateText.innerHTML = turingMachine.currentState;
 }

@@ -1,5 +1,5 @@
 import Cell from "../cell/Cell";
-import TuringMachine from "../turingMachine/turingMachine";
+import TuringMachine from "../turingMachine/TuringMachine";
 
 
 export default class TuringRenderer {

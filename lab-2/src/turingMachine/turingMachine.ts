@@ -1,10 +1,11 @@
 import { Symbol } from "../types/types";
 
 export enum State {
-  q0,
-  q1,
-  q2,
-  q3,
+  Q0 = "Q0. Initial state. State of searching for plus",
+  Q1 = "Q1. State of returning to the first blank on the left",
+  Q2 = "Q2. Transitional state of checking for '1' or '+' on the left-most symbol",
+  Q3 = "Q3. State of adding '1' to the first blank on the right",
+  Q4 = "Q4. Final state",
 }
 
 export default class TuringMachine {
@@ -16,33 +17,12 @@ export default class TuringMachine {
     return this._currentState;
   }
 
-  public get currentStateString(): string {
-    switch (this._currentState) {
-      case State.q0:
-        return "Initial state: q0";
-      case State.q1:
-        return "Finding + state: q1";
-      case State.q2:
-        return "Finding end of tape state: q2";
-      case State.q3:
-        return "Final state: q3";
-    }
-  }
-
-  private _status: string;
-
-  public get status(): string {
-    return this._status;
-  }
-
   constructor(
     tape: Symbol[]
   ) {
     this._tape = tape;
-    this._tape.push(Symbol.BLANK);
     this._headIndex = 0;
-    this._currentState = State.q0;
-    this._status = "Turing Machine started";
+    this._currentState = State.Q0;
   }
 
   public get headIndex(): number {
@@ -59,43 +39,47 @@ export default class TuringMachine {
 
   public resetTape(tape: Symbol[]) {
     this._tape = tape;
-    this._tape.push(Symbol.BLANK);
     this._headIndex = 0;
-    this._currentState = State.q0;
-    this._status = "Turing Machine started";
+    this._currentState = State.Q0;
   }
 
   public step(): void {
     switch (this._currentState) {
-      case State.q0:
-        if (this._tape[this._headIndex] === "+") {
-          this._status = "Read '+', changed it to '1', shifted right, changed state to q1";
-          this.writeSymbol(Symbol.ONE);
+      case State.Q0:
+        if (this._tape[this._headIndex] === "1") {
           this.shiftRight();
-          this.updateState(State.q1);
-        } else {
-          this._status = `Read '${this._tape[this._headIndex]}', left it as it is, shifted right, didn't change state`;
-          this.shiftRight();
-        }
-        break;
-      case State.q1:
-        if (this._tape[this._headIndex] === " ") {
-          this._status = "Read ' ', left it as it is, shifted left, changed state to q2";
-          this.writeSymbol(Symbol.BLANK);
+        } else if (this._tape[this._headIndex] === "+") {
           this.shiftLeft();
-          this.updateState(State.q2);
+          this.updateState(State.Q1);
+        }
+        break;
+      case State.Q1:
+        if (this._tape[this._headIndex] === " ") {
+          this.shiftRight();
+          this.updateState(State.Q2);
         } else {
-          this._status = `Read '${this._tape[this._headIndex]}', left it as it is, shifted right, didn't change state`;
+          this.shiftLeft();
+        }
+        break;
+      case State.Q2:
+        if (this._tape[this._headIndex] === "1") {
+          this.writeSymbol(Symbol.BLANK);
+          this.shiftRight();
+          this.updateState(State.Q3);
+        } else {
+          this.writeSymbol(Symbol.BLANK);
+          this.updateState(State.Q4);
+        }
+        break;
+      case State.Q3:
+        if (this._tape[this._headIndex] === " ") {
+          this.writeSymbol(Symbol.ONE);
+          this.updateState(State.Q1);
+        } else {
           this.shiftRight();
         }
         break;
-      case State.q2:
-        this._status = "Read '1', changed it to ' ', didn't shift, changed state to q3";
-        this.writeSymbol(Symbol.BLANK);
-        this.updateState(State.q3);
-        break;
-      case State.q3:
-        this._status = "Turing Machine finished";
+      case State.Q4:
         break;
     }
   }
@@ -105,10 +89,18 @@ export default class TuringMachine {
   }
 
   private shiftLeft(): void {
-    this._headIndex--;
+    if (this.headIndex == 0) {
+      this._tape.unshift(Symbol.BLANK);
+    } else {
+      this._headIndex--;
+    }
   }
 
   private shiftRight(): void {
+    if (this.headIndex >= this._tape.length - 1) {
+      this._tape.push(Symbol.BLANK);
+    }
+
     this._headIndex++;
   }
 

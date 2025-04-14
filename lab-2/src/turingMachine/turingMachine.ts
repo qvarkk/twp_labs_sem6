@@ -1,28 +1,20 @@
-import { Symbol } from "../types/types";
-
-export enum State {
-  Q0 = "Q0. Initial state. State of searching for plus",
-  Q1 = "Q1. State of returning to the first blank on the left",
-  Q2 = "Q2. Transitional state of checking for '1' or '+' on the left-most symbol",
-  Q3 = "Q3. State of adding '1' to the first blank on the right",
-  Q4 = "Q4. Final state",
-}
+import { Symbol, State, Direction, MTRule } from "../rulesets/unaryMultiplicaction";
 
 export default class TuringMachine {
   private _tape: Symbol[];
   private _headIndex: number;
   private _currentState: State;
+  private _rules: MTRule[];
 
   public get currentState(): State {
     return this._currentState;
   }
 
-  constructor(
-    tape: Symbol[]
-  ) {
+  constructor(tape: Symbol[], rules: MTRule[]) {
     this._tape = tape;
     this._headIndex = 0;
     this._currentState = State.Q0;
+    this._rules = rules;
   }
 
   public get headIndex(): number {
@@ -44,64 +36,50 @@ export default class TuringMachine {
   }
 
   public step(): void {
-    switch (this._currentState) {
-      case State.Q0:
-        if (this._tape[this._headIndex] === "1") {
-          this.shiftRight();
-        } else if (this._tape[this._headIndex] === "+") {
-          this.shiftLeft();
-          this.updateState(State.Q1);
-        }
-        break;
-      case State.Q1:
-        if (this._tape[this._headIndex] === " ") {
-          this.shiftRight();
-          this.updateState(State.Q2);
-        } else {
-          this.shiftLeft();
-        }
-        break;
-      case State.Q2:
-        if (this._tape[this._headIndex] === "1") {
-          this.writeSymbol(Symbol.BLANK);
-          this.shiftRight();
-          this.updateState(State.Q3);
-        } else {
-          this.writeSymbol(Symbol.BLANK);
-          this.updateState(State.Q4);
-        }
-        break;
-      case State.Q3:
-        if (this._tape[this._headIndex] === " ") {
-          this.writeSymbol(Symbol.ONE);
-          this.updateState(State.Q1);
-        } else {
-          this.shiftRight();
-        }
-        break;
-      case State.Q4:
-        break;
-    }
+    const matchingRules = this._rules.filter(
+      (rule) =>
+        rule.currentState === this._currentState &&
+        rule.currentSymbol === this._tape[this._headIndex]
+    );
+
+    if (matchingRules.length > 1) {
+      alert(
+        `Something is wrong with ruleset because 2 or more rules triggered for state ${this._currentState} with ${this._tape[this._headIndex]} symbol`
+      );
+      return;
+    } else if (matchingRules.length === 0) return;
+
+    const selectedRule = matchingRules[0];
+    this.writeSymbol(selectedRule.newSymbol);
+    this.moveHead(selectedRule.move);
+    this.updateState(selectedRule.newState);
   }
 
   private writeSymbol(symbol: Symbol): void {
     this._tape[this._headIndex] = symbol;
   }
 
-  private shiftLeft(): void {
-    if (this.headIndex == 0) {
-      this._tape.unshift(Symbol.BLANK);
-    } else {
-      this._headIndex--;
-    }
-  }
+  private moveHead(move: Direction): void {
+    switch (move) {
+      case "L":
+        if (this.headIndex == 0) {
+          this._tape.unshift(Symbol.BLANK);
+        } else {
+          this._headIndex--;
+        }
+        break;
+      case "R":
+        if (this.headIndex >= this._tape.length - 1) {
+          this._tape.push(Symbol.BLANK);
+        }
 
-  private shiftRight(): void {
-    if (this.headIndex >= this._tape.length - 1) {
-      this._tape.push(Symbol.BLANK);
+        this._headIndex++;
+        break;
+      case "S":
+        break;
+      case "HALT":
+        break;
     }
-
-    this._headIndex++;
   }
 
   private updateState(state: State): void {

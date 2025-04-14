@@ -1,7 +1,9 @@
 import './style.css'
-import { Symbol } from './types/types.ts';
-import TuringMachine, { State } from './turingMachine/TuringMachine.ts';
+import { Symbol, State } from './rulesets/unaryMultiplicaction.ts';
+import TuringMachine from './turingMachine/TuringMachine.ts';
 import TuringRenderer from './turingRenderer/TuringRenderer';
+import unaryMultiplicationRuleset from './rulesets/unaryMultiplicaction.ts';
+import unaryAdditionRuleset from './rulesets/unaryAddition.ts';
 
 let timeout: number | undefined = undefined;
 
@@ -19,7 +21,10 @@ const turingPosX = 25;
 const turingPosY = height / 2 - cellSize / 2;
 
 const stateText = document.querySelector('#state') as HTMLHeadingElement;
-const turingMachine = new TuringMachine([Symbol.ONE, Symbol.PLUS, Symbol.ONE]);
+
+const initialTape: Symbol[] = [Symbol.ONE, Symbol.ONE, Symbol.ASTERISK, Symbol.ONE, Symbol.ONE, Symbol.ONE];
+
+const turingMachine = new TuringMachine(initialTape, unaryMultiplicationRuleset);
 const turingRenderer = new TuringRenderer(canvas, turingPosX, turingPosY, cellSize, turingMachine);
 outputState();
 turingRenderer.draw();
@@ -40,7 +45,7 @@ document.querySelector('#startButton')?.addEventListener('click', () => {
     if (char === "1")
       symbolArray.push(Symbol.ONE);
     else 
-      symbolArray.push(Symbol.PLUS);
+      symbolArray.push(Symbol.ASTERISK);
   }
 
   clearInterval(timeout);
@@ -57,7 +62,7 @@ document.querySelector('#autoButton')?.addEventListener('click', () => {
     turingMachine.step();
     outputState();
     turingRenderer.draw();
-  }, 2000);
+  }, 200);
 });
 
 

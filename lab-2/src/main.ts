@@ -2,12 +2,11 @@ import './style.css'
 import { Symbol, State } from './rulesets/unaryMultiplicaction.ts';
 import TuringMachine from './turingMachine/TuringMachine.ts';
 import TuringRenderer from './turingRenderer/TuringRenderer';
-import unaryMultiplicationRuleset from './rulesets/unaryMultiplicaction.ts';
-import unaryAdditionRuleset from './rulesets/unaryAddition.ts';
+import unaryMultiplicationRuleset, { operation, allowedCharacters } from './rulesets/unaryMultiplicaction.ts';
 
 let timeout: number | undefined = undefined;
 
-const cellSize = 100;
+const cellSize = 75;
 const paddingX = 50;
 const paddingY = 100;
 
@@ -31,21 +30,31 @@ turingRenderer.draw();
 
 
 document.querySelector('#startButton')?.addEventListener('click', () => {
-  const input = document.querySelector('#tapeInput') as HTMLInputElement;
-  const tapeInput = input.value;
-
-  const invalidCharsRegex = /^[1]+\+[1]+$/;
-  if (!invalidCharsRegex.test(tapeInput)) {
-    alert("Tape has to contain valid unary addition string. E.g.: 1+1, 11+111, etc.");
+  const inputFirst = document.querySelector('#tapeInputFirst') as HTMLInputElement;
+  const inputSecond = document.querySelector('#tapeInputSecond') as HTMLInputElement;
+  const valueFirst = inputFirst.value.trim();
+  const valueSecond = inputSecond.value.trim();
+   
+  if (inputFirst.value.length === 0 || inputSecond.value.length === 0) {
+    alert("Both numbers has to be present");
     return;
   }
 
   let symbolArray: Symbol[] = [];
-  for (const char of tapeInput) {
-    if (char === "1")
-      symbolArray.push(Symbol.ONE);
-    else 
-      symbolArray.push(Symbol.ASTERISK);
+  for (const char of valueFirst) {
+    if (!allowedCharacters.includes(char)) {
+      alert("First number has prohibited characters");
+      return;
+    }
+    symbolArray.push(Symbol.ONE);
+  }
+  symbolArray.push(operation);
+  for (const char of valueSecond) {
+    if (!allowedCharacters.includes(char)) {
+      alert("Seconds number has prohibited characters");
+      return;
+    } 
+    symbolArray.push(Symbol.ONE);
   }
 
   clearInterval(timeout);
@@ -54,15 +63,13 @@ document.querySelector('#startButton')?.addEventListener('click', () => {
   turingRenderer.draw();
 });
 
+
 document.querySelector('#autoButton')?.addEventListener('click', () => {
   timeout = setInterval(() => {
-    if (turingMachine.currentState === State.Q4)
-      clearInterval(timeout);
-
     turingMachine.step();
     outputState();
     turingRenderer.draw();
-  }, 500);
+  }, 200);
 });
 
 
@@ -83,7 +90,7 @@ addEventListener('resize', () => {
 
 function resizeCanvas() {
   height = cellSize + paddingY;
-  width = cellSize * 15 + paddingX;
+  width = cellSize * 20 + paddingX;
 //                   ^^ arbitrary number that 
 //                   ^^ will fit enough cells 
 //                   ^^ to show to mister Braginsky emae

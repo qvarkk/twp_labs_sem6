@@ -12,6 +12,9 @@ export enum Symbol {
   BLANK = " ",
 }
 
+export const operation = Symbol.PLUS;
+export const allowedCharacters = ['1'];
+
 export type Direction = "L" | "R" | "S" | "HALT";
 
 export type MTRule = {

@@ -17,6 +17,9 @@ export enum Symbol {
   BLANK = " ",
 }
 
+export const operation = Symbol.ASTERISK;
+export const allowedCharacters = ['1'];
+
 export type Direction = "L" | "R" | "S";
 
 export type MTRule = {

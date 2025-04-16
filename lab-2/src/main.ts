@@ -62,7 +62,7 @@ document.querySelector('#autoButton')?.addEventListener('click', () => {
     turingMachine.step();
     outputState();
     turingRenderer.draw();
-  }, 200);
+  }, 500);
 });
 
 
@@ -83,7 +83,7 @@ addEventListener('resize', () => {
 
 function resizeCanvas() {
   height = cellSize + paddingY;
-  width = cellSize * 12 + paddingX;
+  width = cellSize * 15 + paddingX;
 //                   ^^ arbitrary number that 
 //                   ^^ will fit enough cells 
 //                   ^^ to show to mister Braginsky emae

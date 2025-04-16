@@ -1,14 +1,13 @@
 export enum State {
-  Q0 = "Q0. Initial state",
-  Q1 = "Q1.",
-  Q2 = "Q2.",
-  Q3 = "Q3.",
-  Q4 = "Q4.",
-  Q5 = "Q5.",
-  Q6 = "Q6.",
-  Q7 = "Q7.",
-  Q8 = "Q8.",
-  Q9 = "Q9. Final state",
+  Q0 = "Q0. Finding ASTERISK",
+  Q1 = "Q1. Mark right number's left-most 1",
+  Q2 = "Q2. Mark left number's right-most 1",
+  Q3 = "Q3. Go one cell beyond first BLANK",
+  Q4 = "Q4. Copy ONE from MARK to the new position",
+  Q5 = "Q5. Move to the right number",
+  Q6 = "Q6. Reset left number",
+  Q7 = "Q7. Erase everything that's not the result",
+  Q8 = "Q8. Felina",
 }
 
 export enum Symbol {
@@ -18,7 +17,7 @@ export enum Symbol {
   BLANK = " ",
 }
 
-export type Direction = "L" | "R" | "S" | "HALT";
+export type Direction = "L" | "R" | "S";
 
 export type MTRule = {
   currentState: State;
@@ -28,8 +27,8 @@ export type MTRule = {
   move: Direction;
 };
 
-// TODO: fix rules, they don't work
 const unaryMultiplicationRuleset: MTRule[] = [
+  // Q0. Finding * sign 
   {
     currentState: State.Q0,
     currentSymbol: Symbol.ONE,
@@ -44,6 +43,7 @@ const unaryMultiplicationRuleset: MTRule[] = [
     newSymbol: Symbol.ASTERISK,
     move: "R"
   },
+  // Q1. Mark right number's left-most 1
   {
     currentState: State.Q1,
     currentSymbol: Symbol.ONE,
@@ -52,6 +52,28 @@ const unaryMultiplicationRuleset: MTRule[] = [
     move: "L"
   },
   {
+    currentState: State.Q1,
+    currentSymbol: Symbol.ASTERISK,
+    newState: State.Q1,
+    newSymbol: Symbol.ASTERISK,
+    move: "R"
+  },
+  {
+    currentState: State.Q1,
+    currentSymbol: Symbol.MARK,
+    newState: State.Q1,
+    newSymbol: Symbol.MARK,
+    move: "R"
+  },
+  {
+    currentState: State.Q1,
+    currentSymbol: Symbol.BLANK,
+    newState: State.Q7,
+    newSymbol: Symbol.BLANK,
+    move: "L"
+  },
+  // Q2. Mark left number's right-most 1
+  {
     currentState: State.Q2,
     currentSymbol: Symbol.ASTERISK,
     newState: State.Q2,
@@ -65,6 +87,21 @@ const unaryMultiplicationRuleset: MTRule[] = [
     newSymbol: Symbol.MARK,
     move: "R"
   },
+  {
+    currentState: State.Q2,
+    currentSymbol: Symbol.MARK,
+    newState: State.Q2,
+    newSymbol: Symbol.MARK,
+    move: "L"
+  },
+  {
+    currentState: State.Q2,
+    currentSymbol: Symbol.BLANK,
+    newState: State.Q6,
+    newSymbol: Symbol.BLANK,
+    move: "R"
+  },
+  // Q3. Go one cell beyond first BLANK
   {
     currentState: State.Q3,
     currentSymbol: Symbol.ASTERISK,
@@ -93,39 +130,12 @@ const unaryMultiplicationRuleset: MTRule[] = [
     newSymbol: Symbol.BLANK,
     move: "R"
   },
+  // Q4. Copy ONE from MARK to the right-most BLANK
   {
     currentState: State.Q4,
     currentSymbol: Symbol.BLANK,
     newState: State.Q5,
     newSymbol: Symbol.ONE,
-    move: "L"
-  },
-  {
-    currentState: State.Q5,
-    currentSymbol: Symbol.BLANK,
-    newState: State.Q5,
-    newSymbol: Symbol.BLANK,
-    move: "L"
-  },
-  {
-    currentState: State.Q5,
-    currentSymbol: Symbol.ONE,
-    newState: State.Q5,
-    newSymbol: Symbol.ONE,
-    move: "L"
-  },
-  {
-    currentState: State.Q5,
-    currentSymbol: Symbol.MARK,
-    newState: State.Q2,
-    newSymbol: Symbol.MARK,
-    move: "L"
-  },
-  {
-    currentState: State.Q2,
-    currentSymbol: Symbol.MARK,
-    newState: State.Q2,
-    newSymbol: Symbol.MARK,
     move: "L"
   },
   {
@@ -135,13 +145,29 @@ const unaryMultiplicationRuleset: MTRule[] = [
     newSymbol: Symbol.ONE,
     move: "R"
   },
+  // Q5. Move to the right number
   {
-    currentState: State.Q2,
+    currentState: State.Q5,
     currentSymbol: Symbol.BLANK,
-    newState: State.Q6,
+    newState: State.Q5,
     newSymbol: Symbol.BLANK,
-    move: "R"
+    move: "L"
   },
+  {
+    currentState: State.Q5,
+    currentSymbol: Symbol.ONE,
+    newState: State.Q5,
+    newSymbol: Symbol.ONE,
+    move: "L"
+  },
+  {
+    currentState: State.Q5,
+    currentSymbol: Symbol.MARK,
+    newState: State.Q2,
+    newSymbol: Symbol.MARK,
+    move: "L"
+  },
+  // Q6. Reset left number
   {
     currentState: State.Q6,
     currentSymbol: Symbol.MARK,
@@ -152,56 +178,36 @@ const unaryMultiplicationRuleset: MTRule[] = [
   {
     currentState: State.Q6,
     currentSymbol: Symbol.ASTERISK,
-    newState: State.Q7,
+    newState: State.Q1,
     newSymbol: Symbol.ASTERISK,
     move: "R"
   },
+  // Q7. Erase everything that's not the result
   {
     currentState: State.Q7,
-    currentSymbol: Symbol.ASTERISK,
-    newState: State.Q7,
-    newSymbol: Symbol.ASTERISK,
-    move: "R"
-  },
-  {
-    currentState: State.Q7,
-    currentSymbol: Symbol.ONE,
-    newState: State.Q2,
-    newSymbol: Symbol.MARK,
-    move: "L"
-  },
-  {
-    currentState: State.Q7,
-    currentSymbol: Symbol.BLANK,
-    newState: State.Q8,
-    newSymbol: Symbol.BLANK,
-    move: "L"
-  },
-  {
-    currentState: State.Q8,
     currentSymbol: Symbol.MARK,
-    newState: State.Q8,
+    newState: State.Q7,
     newSymbol: Symbol.BLANK,
     move: "L"
   },
   {
-    currentState: State.Q8,
+    currentState: State.Q7,
     currentSymbol: Symbol.ASTERISK,
-    newState: State.Q8,
+    newState: State.Q7,
     newSymbol: Symbol.BLANK,
     move: "L"
   },
   {
-    currentState: State.Q8,
+    currentState: State.Q7,
     currentSymbol: Symbol.ONE,
-    newState: State.Q8,
+    newState: State.Q7,
     newSymbol: Symbol.BLANK,
     move: "L"
   },
   {
-    currentState: State.Q8,
+    currentState: State.Q7,
     currentSymbol: Symbol.BLANK,
-    newState: State.Q9,
+    newState: State.Q8,
     newSymbol: Symbol.BLANK,
     move: "S"
   }

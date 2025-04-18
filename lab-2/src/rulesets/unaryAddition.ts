@@ -12,10 +12,11 @@ export enum Symbol {
   BLANK = " ",
 }
 
+export const finalState = State.Q4;
 export const operation = Symbol.PLUS;
 export const allowedCharacters = ['1'];
 
-export type Direction = "L" | "R" | "S" | "HALT";
+export type Direction = "L" | "R" | "S";
 
 export type MTRule = {
   currentState: State;
@@ -25,7 +26,7 @@ export type MTRule = {
   move: Direction;
 };
 
-const unaryAdditionRuleset: MTRule[] = [
+export const ruleset: MTRule[] = [
   {
     currentState: State.Q0,
     currentSymbol: Symbol.ONE,
@@ -97,5 +98,3 @@ const unaryAdditionRuleset: MTRule[] = [
     move: "R"
   },
 ];
-
-export default unaryAdditionRuleset;

@@ -1,4 +1,4 @@
-import { Symbol, State, Direction, MTRule } from "../rulesets/unaryMultiplicaction";
+import { Symbol, State, Direction, MTRule } from "../rulesets/binaryAddition";
 
 export default class TuringMachine {
   private _tape: Symbol[];
@@ -76,8 +76,6 @@ export default class TuringMachine {
         this._headIndex++;
         break;
       case "S":
-        break;
-      case "HALT":
         break;
     }
   }

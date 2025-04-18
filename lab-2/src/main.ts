@@ -1,8 +1,7 @@
 import './style.css'
-import { Symbol, State } from './rulesets/unaryMultiplicaction.ts';
 import TuringMachine from './turingMachine/TuringMachine.ts';
 import TuringRenderer from './turingRenderer/TuringRenderer';
-import unaryMultiplicationRuleset, { operation, allowedCharacters } from './rulesets/unaryMultiplicaction.ts';
+import { Symbol, ruleset, operation, allowedCharacters } from './rulesets/binaryAddition.ts';
 
 let timeout: number | undefined = undefined;
 
@@ -21,9 +20,9 @@ const turingPosY = height / 2 - cellSize / 2;
 
 const stateText = document.querySelector('#state') as HTMLHeadingElement;
 
-const initialTape: Symbol[] = [Symbol.ONE, Symbol.ONE, Symbol.ASTERISK, Symbol.ONE, Symbol.ONE, Symbol.ONE];
+const initialTape: Symbol[] = [Symbol.ONE, Symbol.ZERO, Symbol.BLANK, Symbol.ONE, Symbol.ZERO, Symbol.ONE];
 
-const turingMachine = new TuringMachine(initialTape, unaryMultiplicationRuleset);
+const turingMachine = new TuringMachine(initialTape, ruleset);
 const turingRenderer = new TuringRenderer(canvas, turingPosX, turingPosY, cellSize, turingMachine);
 outputState();
 turingRenderer.draw();
@@ -46,15 +45,22 @@ document.querySelector('#startButton')?.addEventListener('click', () => {
       alert("First number has prohibited characters");
       return;
     }
-    symbolArray.push(Symbol.ONE);
+    if (char === "1")
+      symbolArray.push(Symbol.ONE);
+    else
+      symbolArray.push(Symbol.ZERO);
   }
-  symbolArray.push(operation);
+  // symbolArray.push(operation);
+  symbolArray.push(Symbol.BLANK);
   for (const char of valueSecond) {
     if (!allowedCharacters.includes(char)) {
       alert("Seconds number has prohibited characters");
       return;
     } 
-    symbolArray.push(Symbol.ONE);
+    if (char === "1")
+      symbolArray.push(Symbol.ONE);
+    else
+      symbolArray.push(Symbol.ZERO);
   }
 
   clearInterval(timeout);

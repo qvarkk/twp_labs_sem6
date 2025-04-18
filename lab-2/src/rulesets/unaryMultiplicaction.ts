@@ -17,6 +17,7 @@ export enum Symbol {
   BLANK = " ",
 }
 
+export const finalState = State.Q4;
 export const operation = Symbol.ASTERISK;
 export const allowedCharacters = ['1'];
 
@@ -30,7 +31,7 @@ export type MTRule = {
   move: Direction;
 };
 
-const unaryMultiplicationRuleset: MTRule[] = [
+export const ruleset: MTRule[] = [
   // Q0. Finding * sign 
   {
     currentState: State.Q0,
@@ -215,5 +216,3 @@ const unaryMultiplicationRuleset: MTRule[] = [
     move: "S"
   }
 ];
-
-export default unaryMultiplicationRuleset;

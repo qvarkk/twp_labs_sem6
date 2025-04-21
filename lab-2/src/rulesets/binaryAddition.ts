@@ -1,11 +1,11 @@
 export enum State {
-  Q0 = "Q0.",
-  Q1 = "Q1.",
-  Q2 = "Q2.",
-  Q3 = "Q3.",
-  Q4 = "Q4.",
-  Q5 = "Q5.",
-  Q6 = "Q6. Final state"
+  Q0 = "Q0. Going right to the end of first number",
+  Q1 = "Q1. Going right to the end of second number",
+  Q2 = "Q2. Decrementing second number",
+  Q3 = "Q3. Going left to the end of first number",
+  Q4 = "Q4. Incrementing first number",
+  Q5 = "Q5. Decremented to 0. Cleaning up second number",
+  Q6 = "Q6. Felina"
 }
 
 export enum Symbol {
